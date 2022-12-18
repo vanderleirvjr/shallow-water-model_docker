@@ -2,12 +2,7 @@
 
 build_container() {
 
-    if [ ! -f Dockerfile ]; then
-        cp -Rf ./util/docker/Dockerfile .
-    fi
-    docker build -t intel/oneapi-hpckit:1.0 .
-
-    cp -Rf ./util/docker/docker-compose.yml .
+    docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
 
     ROOT_DIR=`pwd`
 
@@ -53,16 +48,39 @@ echo
 echo "-------------------------------------------------------"
 echo
 
+
+
 mkdir -p ./bin 
 
 while true; do
-    read -p " Do you wish to build the code in a docker container? [Y/n] " opt
+
+     HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+
+    if [ -z $HASH_ID ]; then
+        read -p " Do you wish to build the code in a docker container? [Y/n] " opt
+    else
+        opt="Y"
+    fi 
+    echo
     case $opt in
        "Y")
           build_container
+          cd ./bin
+          chmod 755 ./start 
+          chmod 755 ./connect
+          ./start
+          cd ..
+          cp -Rf ./util/docker/comp.sh .
+          docker exec intel-gnu /bin/bash /home/container/comp.sh
+          rm -rf ./comp.sh
           break
           ;;
       "n")
+          cd ./src
+          make
+          cd ../bin
+          ln -fs ../src/swf.exe .
+          cd ..
           break
           ;;
       *)
@@ -72,26 +90,15 @@ while true; do
     esac
 done
 
-
-cd ./bin
-
-chmod 755 ./start 
-chmod 755 ./connect
-
-./start
-
-HASH_ID=`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1`
-
-cd ..
-
-cp -Rf ./util/docker/comp.sh .
-
-docker exec intel-gnu /bin/bash /home/container/comp.sh
-
-rm -rf ./comp.sh
-
+if [ ! -f ./src/swf.exe ]; then
+  echo
+  echo "  ERROR: Compilation failed! "
+  echo 
+  exit
+fi
 
 DATE=`date`
+echo
 echo "======================================================="
 echo 
 echo "  Compilation ended at $DATE"

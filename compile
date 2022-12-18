@@ -7,7 +7,7 @@ build_container() {
     fi
     docker build -t intel/oneapi-hpckit:1.0 .
 
-    cp -Rf ./util/docker/docker-compose.yml
+    cp -Rf ./util/docker/docker-compose.yml .
 
     ROOT_DIR=`pwd`
 

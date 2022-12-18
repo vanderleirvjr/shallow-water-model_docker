@@ -10,6 +10,11 @@ module io_module
         integer(kind=i_kind) :: nx
         integer(kind=i_kind) :: ny
 
+        real(kind=r_kind) :: dt
+        real(kind=r_kind) :: run_time
+
+        real(kind=r_kind) :: time_step
+
     end type namelist_options
     
     contains
@@ -19,10 +24,15 @@ module io_module
             type(namelist_options), intent(out) :: opt
             integer(kind=i_kind) :: nx
             integer(kind=i_kind) :: ny
+            real(kind=r_kind)    :: dt
+            real(kind=r_kind)    :: run_time
+            real(kind=r_kind)    :: time_step
             integer(kind=i_kind) :: rc, fu
             character(len=100)   :: file_path = "namelist.input"
 
-            namelist /dimensions/ nx, ny
+            namelist /gridinfo/ nx, ny
+            namelist /integration/ dt, run_time
+            namelist /io/ time_step
 
             inquire (file=file_path, iostat=rc)
 
@@ -32,11 +42,22 @@ module io_module
             end if
 
             open (newunit=fu, file=file_path, action='read', iostat=rc)
-            read (nml=dimensions, iostat=rc, unit=fu)
+            read (nml=gridinfo, iostat=rc, unit=fu)
+            if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
+            
+            read (nml=integration, iostat=rc, unit=fu)
+            if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
+
+            read (nml=io, iostat=rc, unit=fu)
             if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
 
             opt%nx = nx
             opt%ny = ny
+
+            opt%run_time = run_time 
+            opt%dt = dt
+
+            opt%time_step = time_step
 
             return
 

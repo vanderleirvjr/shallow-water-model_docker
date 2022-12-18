@@ -1,4 +1,11 @@
-&dimensions
+&gridinfo
 nx = 10
 ny = 10
+/
+&integration
+dt = 1
+run_time = 100
+/
+&io
+time_step = 5
 /

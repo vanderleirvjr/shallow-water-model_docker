@@ -9,14 +9,13 @@ module model_core
     implicit none
 
     type(grid2d) :: grid
+    type(namelist_options) :: opt
 
     contains
 
         subroutine initialize
 
             implicit none
-
-            type(namelist_options) :: opt
 
             call read_namelist(opt)
 
@@ -33,11 +32,26 @@ module model_core
             implicit none
 
             type(grid2d) :: new_grid
+            integer :: iterations
+            integer :: i 
 
-            call update_wnd
-            call update_height
+            iterations = int(opt%run_time / opt%dt)
 
-            grid = new_grid
+            do i = 1, iterations + 1
+
+                if ( mod((i-1)*opt%dt,opt%time_step) == 0 ) then
+                    print*, (i-1)*opt%dt
+
+                end if 
+
+                new_grid = grid 
+
+                call update_wnd
+                call update_height
+    
+                grid = new_grid
+    
+            end do
 
             return
 

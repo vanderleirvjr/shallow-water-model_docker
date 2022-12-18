@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ ! -z ${1} ]; then
+  if [ ${1} == "-a" ]; then
+      rm -rf ./bin
+  else
+      echo "Option ${1} does not exist."
+      exit
+  fi
+fi
+
+cd ./src
+
+make clean

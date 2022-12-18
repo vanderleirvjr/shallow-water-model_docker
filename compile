@@ -1,15 +1,105 @@
 #!/bin/bash
 
+build_container() {
+
+    if [ ! -f Dockerfile ]; then
+        cp -Rf ./util/docker/Dockerfile .
+    fi
+    docker build -t intel/oneapi-hpckit:1.0 .
+
+    cp -Rf ./util/docker/docker-compose.yml
+
+    ROOT_DIR=`pwd`
+
+cat << EOF > docker-compose.yml
+version: "3.9"
+   
+services:
+
+  main:
+    image: intel/oneapi-hpckit:1.0
+    container_name: intel-gnu
+    ports:
+      - "7777:9000"
+    volumes:
+      - "${ROOT_DIR}:/home/container"
+
+EOF
+
+cat << EOF > ./bin/connect
+
+#!/bin/bash
+
+HASH_ID=\`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1\`
+
+docker exec -it \${HASH_ID} bash
+
+EOF
+
+    YML_FILE="${ROOT_DIR}/docker-compose.yml"
+    echo "docker-compose -f ${YML_FILE} up -d" > ./bin/start 
+
+}
+
+
+DATE=`date`
+
+echo
+echo "-------------------------------------------------------"
+echo
+echo "           Shallow Water Model - Fortran"
+echo "  Compilation started at $DATE"
+echo
+echo "-------------------------------------------------------"
+echo
+
 mkdir -p ./bin 
 
-cd ./src
+while true; do
+    read -p " Do you wish to build the code in a docker container? [Y/n] " opt
+    case $opt in
+       "Y")
+          build_container
+          break
+          ;;
+      "n")
+          break
+          ;;
+      *)
+         echo "ERROR: Option $opt not valid. Try again..."
+         echo   
+     ;;
+    esac
+done
 
-make
 
-cd ../bin
+cd ./bin
 
-ln -fs ../src/swf.exe .
+chmod 755 ./start 
+chmod 755 ./connect
 
-if [ ! -f "./namelist.input" ]; then
-    cp -rf ../util/namelist.input .
-fi
+./start
+
+HASH_ID=`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1`
+
+cd ..
+
+cp -Rf ./util/docker/comp.sh .
+
+docker exec intel-gnu /bin/bash /home/container/comp.sh
+
+rm -rf ./comp.sh
+
+
+DATE=`date`
+echo "======================================================="
+echo 
+echo "  Compilation ended at $DATE"
+echo
+echo "======================================================="
+echo
+
+
+
+
+

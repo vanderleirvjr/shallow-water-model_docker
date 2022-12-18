@@ -1,0 +1,9 @@
+git
+wget
+m4
+gcc
+gfortran
+make
+g++
+sudo
+vim

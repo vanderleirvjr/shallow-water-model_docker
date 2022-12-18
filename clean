@@ -3,6 +3,8 @@
 if [ ! -z ${1} ]; then
   if [ ${1} == "-a" ]; then
       rm -rf ./bin
+      rm -rf ./Dockerfile
+      rm -rf ./docker-compose.yml
   else
       echo "Option ${1} does not exist."
       exit

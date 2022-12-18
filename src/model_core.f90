@@ -1,5 +1,6 @@
 module model_core
 
+    use, intrinsic :: iso_fortran_env, only: stdout => output_unit
     use system_state, only: initialize_grid, initial_conditions
     use kinds, only: r_kind, i_kind 
     use gridinfo, only: grid2d
@@ -31,17 +32,19 @@ module model_core
 
             implicit none
 
-            type(grid2d) :: new_grid
-            integer :: iterations
-            integer :: i 
+            type(grid2d)         :: new_grid
+            integer              :: i, iterations
+            integer(kind=i_kind) :: stdout
+            real(kind=r_kind)    :: elapsed
 
             iterations = int(opt%run_time / opt%dt)
 
             do i = 1, iterations + 1
 
                 if ( mod((i-1)*opt%dt,opt%time_step) == 0 ) then
-                    print*, (i-1)*opt%dt
-
+                    elapsed = 0
+                    write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
+                    write(stdout,'("Done. Time elapsed = ",F6.4)') elapsed
                 end if 
 
                 new_grid = grid 

@@ -16,6 +16,6 @@ cd ./src
 
 make clean
 
-rm -rf ./.local
+rm -rf ../.local
 
 rm -rf ./src/Makefile

@@ -4,7 +4,7 @@ module model_core
     use system_state, only: initialize_grid, initial_conditions
     use kinds, only: r_kind, i_kind 
     use gridinfo, only: grid2d
-    use io_module, only: read_namelist, namelist_options
+    use io_module, only: read_namelist, namelist_options, write_output
     use physics, only: update_height, update_wnd
 
     implicit none
@@ -53,6 +53,8 @@ module model_core
                 call update_height
     
                 grid = new_grid
+
+                write_output(grid)
     
             end do
 

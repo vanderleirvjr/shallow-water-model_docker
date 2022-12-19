@@ -1,9 +1,14 @@
 module io_module
 
-    use, intrinsic :: iso_fortran_env, only: stderr => error_unit
+    use, intrinsic :: iso_fortran_env, only: stderr => error_unit, stdout => output_unit
     use kinds, only: i_kind, r_kind
+    use system_state, only: grid2d
+    use netcdf
 
     implicit none
+
+    public :: read_namelist, write_output
+    private
 
     type namelist_options
         
@@ -20,6 +25,8 @@ module io_module
     contains
       
         subroutine read_namelist(opt)
+
+            implicit none
 
             type(namelist_options), intent(out) :: opt
             integer(kind=i_kind) :: nx
@@ -41,7 +48,7 @@ module io_module
                 return
             end if
 
-            open (newunit=fu, file=file_path, action='read', iostat=rc)
+            open (newunit=fu, file=file_path, action='read', iostat=rc, status='old')
             read (nml=gridinfo, iostat=rc, unit=fu)
             if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
             
@@ -62,6 +69,17 @@ module io_module
             return
 
         end subroutine read_namelist
+
+        subroutine write_output(grid)
+
+            implicit none
+   
+            type(grid2d), intent(in) :: grid
+
+
+            return
+
+        end subroutine write_output
 
 
 end module io_module

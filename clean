@@ -5,6 +5,7 @@ if [ ! -z ${1} ]; then
       rm -rf ./bin
       rm -rf ./Dockerfile
       rm -rf ./docker-compose.yml
+      rm -rf ./config.in
   else
       echo "Option ${1} does not exist."
       exit
@@ -14,3 +15,7 @@ fi
 cd ./src
 
 make clean
+
+rm -rf ./.local
+
+rm -rf ./src/Makefile

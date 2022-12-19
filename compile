@@ -1,41 +1,16 @@
 #!/bin/bash
 
-build_container() {
+source ./arch/functions.sh
 
-    docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
+if [ ! -f "config.in" ]; then 
+    echo 
+    echo "  ERROR: config.ac was not found!"
+    echo "  use ./configure" 
+    echo
+    exit
+fi
 
-    ROOT_DIR=`pwd`
-
-cat << EOF > docker-compose.yml
-version: "3.9"
-   
-services:
-
-  main:
-    image: intel/oneapi-hpckit:1.0
-    container_name: intel-gnu
-    ports:
-      - "7777:9000"
-    volumes:
-      - "${ROOT_DIR}:/home/container"
-
-EOF
-
-cat << EOF > ./bin/connect
-
-#!/bin/bash
-
-HASH_ID=\`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1\`
-
-docker exec -it \${HASH_ID} bash
-
-EOF
-
-    YML_FILE="${ROOT_DIR}/docker-compose.yml"
-    echo "docker-compose -f ${YML_FILE} up -d" > ./bin/start 
-
-}
-
+source ./config.in
 
 DATE=`date`
 
@@ -48,22 +23,23 @@ echo
 echo "-------------------------------------------------------"
 echo
 
-
-
 mkdir -p ./bin 
 
 while true; do
 
      HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
 
-    if [ -z $HASH_ID ]; then
+    if [[ -f ./.local ]]; then
+        opt="n"
+    elif [[ -z $HASH_ID ]]; then
         read -p " Do you wish to build the code in a docker container? [Y/n] " opt
-    else
-        opt="Y"
-    fi 
-    echo
+    else 
+       opt="Y"
+    fi
+    
     case $opt in
        "Y")
+          build_makefile
           build_container
           cd ./bin
           chmod 755 ./start 
@@ -76,6 +52,8 @@ while true; do
           break
           ;;
       "n")
+          touch ./.local
+          build_makefile
           cd ./src
           make
           cd ../bin
@@ -88,7 +66,16 @@ while true; do
          echo   
      ;;
     esac
+
 done
+
+cd ./bin 
+
+if [ ! -f ./namelist.input ]; then 
+    cp ../util/namelist.input .
+fi
+
+cd ..
 
 if [ ! -f ./src/swf.exe ]; then
   echo

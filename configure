@@ -1,0 +1,32 @@
+#!/bin/bash
+
+source ./arch/functions.sh
+
+while true; do
+
+    echo 
+    echo "  Compiler options available: "
+    echo "  [1] - gnu compiler"
+    echo "  [2] - intel compiler"
+    echo
+    read -p "  Choose option: " opt
+    echo
+    
+    case $opt in
+       "1")
+          echo "  gnu compiler selected."
+          build_config gnu
+          break
+          ;;
+      "2")
+          echo "  intel compiler selected."
+          build_config intel
+          break
+          ;;
+      *)
+         echo "ERROR: Option $opt not valid. Try again..."
+         echo   
+     ;;
+    esac
+done
+echo

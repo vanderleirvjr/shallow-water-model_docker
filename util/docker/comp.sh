@@ -2,6 +2,8 @@
 
 cd /home/container/src 
 
+source /home/container/.bashrc
+
 make
 
 cd ../bin 

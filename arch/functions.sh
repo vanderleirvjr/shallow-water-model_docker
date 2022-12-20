@@ -2,10 +2,8 @@
 build_makefile() {
 
     input="./arch/Makefile.ac"
-    echo "FC = $FC" > ./src/Makefile
-    echo "LDFLAGS = $LDFLAGS" >> ./src/Makefile
-    echo  "CPPFLAGS = $CPPFLAGS" >> ./src/Makefile
-    echo  "FFLAGS = $FFLAGS" >> ./src/Makefile
+  
+    echo "include ../config.in" > ./src/Makefile
 
     IFS=$'\n'
     for line in $(cat $input); do

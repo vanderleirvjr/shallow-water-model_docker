@@ -1,5 +1,10 @@
 EXE = swf.exe
 
+FC := $(subst $\',,$(FC))
+CPPFLAGS := $(subst $\',,$(CPPFLAGS))
+LDFLAGS := $(subst $\',,$(LDFLAGS))
+FFLAGS := $(subst $\',,$(FFLAGS))
+
 OBJS = main.o system_state.o kinds.o gridinfo.o \
 model_core.o io_module.o physics.o
 

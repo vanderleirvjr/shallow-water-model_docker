@@ -41,12 +41,52 @@ cat << EOF > ./bin/connect
 
 HASH_ID=\`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1\`
 
+if [ ! -z \${HASH} ]; then
+  echo
+  echo "  ERROR: Cannot connect to the container."
+  echo
+  exit
+fi
+
 docker exec -it \${HASH_ID} bash
 
 EOF
 
-    YML_FILE="${ROOT_DIR}/docker-compose.yml"
-    echo "docker-compose -f ${YML_FILE} up -d" > ./bin/start 
+YML_FILE="${ROOT_DIR}/docker-compose.yml"
+cat << EOF > ./bin/start
+
+#!/bin/bash
+
+CHECK=`which docker`
+
+if [ ! -f $CHECK ]; then
+  echo
+  echo "  ERROR: Cannot start the container."
+  echo
+  exit
+fi
+
+docker-compose -f ${YML_FILE} up -d
+
+EOF
+
+cat << EOF > ./bin/stop
+
+#!/bin/bash
+
+HASH_ID=\`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1\`
+
+if [ ! -z \${HASH} ]; then
+  echo
+  echo "  ERROR: The container is not running."
+  echo
+  exit
+fi
+
+docker stop \${HASH_ID}
+
+EOF
+
 
 }
 

@@ -7,7 +7,7 @@ module io_module
 
     implicit none
 
-    public :: read_namelist, write_output
+    public :: read_namelist, write_output, namelist_options
     private
 
     type namelist_options

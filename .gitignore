@@ -4,5 +4,5 @@ bin/
 *.exe
 docker-compose.yml
 config.in
-.local
+.*
 Makefile

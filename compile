@@ -29,42 +29,47 @@ while true; do
 
      HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
 
+    is_container=false
     if [[ -f ./.local ]]; then
         opt="n"
     elif [[ -z $HASH_ID ]]; then
         read -p " Do you wish to build the code in a docker container? [Y/n] " opt
     else 
        opt="Y"
+       is_container=true
     fi
     
     case $opt in
-       "Y")
-          build_makefile
-          build_container
-          cd ./bin
-          chmod 755 ./start 
-          chmod 755 ./connect
-          ./start
-          cd ..
-          cp -Rf ./util/docker/comp.sh .
-          docker exec intel-gnu /bin/bash /home/container/comp.sh
-          rm -rf ./comp.sh
-          break
-          ;;
-      "n")
-          touch ./.local
-          build_makefile
-          cd ./src
-          make
-          cd ../bin
-          ln -fs ../src/swf.exe .
-          cd ..
-          break
-          ;;
-      *)
-         echo "ERROR: Option $opt not valid. Try again..."
-         echo   
-     ;;
+        "Y")
+            build_makefile
+            if [ is_container == "false" ]; then
+                build_container
+                chmod 755 ./start 
+                chmod 755 ./connect
+                chmod 755 ./stop
+                cd ./bin
+                ./start
+                cd ..
+            fi
+            cp -Rf ./util/docker/comp.sh .
+            docker exec intel-gnu /bin/bash /home/container/comp.sh
+            rm -rf ./comp.sh
+            break
+            ;;
+        "n")
+            touch ./.local
+            build_makefile
+            cd ./src
+            make
+            cd ../bin
+            ln -fs ../src/swf.exe .
+            cd ..
+            break
+            ;;
+        *)
+            echo "ERROR: Option $opt not valid. Try again..."
+            echo   
+            ;;
     esac
 
 done

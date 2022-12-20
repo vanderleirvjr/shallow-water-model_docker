@@ -16,30 +16,24 @@ build_makefile() {
 
 build_container() {
 
-    docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
+    IMAGE=`docker images | grep intel/oneapi-hpckit`
+
+    opt="n"
+    if [ ! -z $IMAGE ]; then
+      read -p "Found image called intel/oneapi-hpckit. Do you want to build another image? [Y/n] " opt
+    fi
+
+    if [ $opt == "Y" ]; then 
+        docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
+    fi
 
     ROOT_DIR=`pwd`
-
-cat << EOF > docker-compose.yml
-version: "3.9"
-   
-services:
-
-  main:
-    image: intel/oneapi-hpckit:1.0
-    container_name: intel-gnu
-    ports:
-      - "7777:9000"
-    volumes:
-      - "${ROOT_DIR}:/home/container"
-
-EOF
 
 cat << EOF > ./bin/connect
 
 #!/bin/bash
 
-HASH_ID=\`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1\`
+HASH_ID=\`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1\`
 
 if [ ! -z \${HASH} ]; then
   echo
@@ -59,7 +53,7 @@ cat << EOF > ./bin/start
 
 CHECK=`which docker`
 
-if [ ! -f $CHECK ]; then
+if [ ! -f \${CHECK} ]; then
   echo
   echo "  ERROR: Cannot start the container."
   echo
@@ -74,7 +68,7 @@ cat << EOF > ./bin/stop
 
 #!/bin/bash
 
-HASH_ID=\`docker ps | grep intel-gnu | grep ntel/oneapi-hpckit | cut -d' ' -f1\`
+HASH_ID=\`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1\`
 
 if [ ! -z \${HASH} ]; then
   echo

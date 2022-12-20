@@ -42,15 +42,18 @@ while true; do
     case $opt in
         "Y")
             build_makefile
-            if [ is_container == "false" ]; then
+            if [ $is_container == "false" ]; then
                 build_container
+                cd ./bin
                 chmod 755 ./start 
                 chmod 755 ./connect
                 chmod 755 ./stop
-                cd ./bin
-                ./start
                 cd ..
             fi
+            if [[ ! -z $HASH_ID ]]; then
+                docker stop $HASH_ID
+            fi
+            ./bin/start
             cp -Rf ./util/docker/comp.sh .
             docker exec intel-gnu /bin/bash /home/container/comp.sh
             rm -rf ./comp.sh

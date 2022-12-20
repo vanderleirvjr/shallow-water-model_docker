@@ -29,4 +29,22 @@ while true; do
      ;;
     esac
 done
+
+ROOT_DIR=`pwd`
+cat << EOF > docker-compose.yml
+version: "3.9"
+   
+services:
+
+  main:
+    image: intel/oneapi-hpckit:1.0
+    container_name: intel-gnu
+    ports:
+      - "7777:9000"
+    volumes:
+      - "${ROOT_DIR}:/home/container"
+    command: bash -c 'echo "source /etc/profile.d/lmod.sh" > .bashrc && echo "module load $COMP_NAME" >> .bashrc && tail -f /dev/null'
+
+EOF
+
 echo

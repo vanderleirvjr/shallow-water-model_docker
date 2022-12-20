@@ -7,3 +7,5 @@ make
 g++
 sudo
 vim
+rsync
+lmod

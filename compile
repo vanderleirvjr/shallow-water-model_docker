@@ -50,9 +50,6 @@ while true; do
                 chmod 755 ./stop
                 cd ..
             fi
-            if [[ ! -z $HASH_ID ]]; then
-                docker stop $HASH_ID
-            fi
             ./bin/start
             cp -Rf ./util/docker/comp.sh .
             docker exec intel-gnu /bin/bash /home/container/comp.sh

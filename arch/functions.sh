@@ -20,11 +20,25 @@ build_container() {
 
     opt="n"
     if [ ! -z $IMAGE ]; then
-      read -p "Found image called intel/oneapi-hpckit. Do you want to build another image? [Y/n] " opt
-    fi
+while true; do
 
-    if [ $opt == "Y" ]; then 
-        docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
+    echo 
+    read -p "  Found image called intel/oneapi-hpckit. Do you want to build another image? [Y/n] " opt
+    echo
+    
+    case $opt in
+       "Y")
+          docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
+          ;;
+      "n")
+          break
+          ;;
+      *)
+         echo "ERROR: Option $opt not valid. Try again..."
+         echo   
+     ;;
+    esac
+done
     fi
 
     ROOT_DIR=`pwd`

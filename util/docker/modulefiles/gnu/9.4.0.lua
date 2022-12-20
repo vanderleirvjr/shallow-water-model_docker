@@ -24,7 +24,7 @@ local binpath  = pathJoin(basepath, "/bin")             -- binaries
 local libpath  = pathJoin(basepath, "/lib64")           -- libraries
 local incpath  = pathJoin(basepath, "/include")         -- include files
 local manpath  = pathJoin(basepath, "/share/man")       -- man pages
-local l32path  = pathJoin(basepath, "/lib/gcc/x86_64-pc-linux-gnu/10")
+local l32path  = pathJoin(basepath, "/lib/gcc/x86_64-pc-linux-gnu/9")
 
 -- Update the binary and manual paths in user environment
 prepend_path("PATH",    binpath)
@@ -42,8 +42,8 @@ setenv("GNU_MINOR_VERSION",     "0")
 setenv("LMOD_COMPILER_VERSION", "9.4.0")
 
 -- Update modulepath to contain correct dependent module tree
-local mroot = "/usr/local"
-local mdir = pathJoin(mroot,"gnu/9.4.0")
+local mroot = "/usr/local/modulefiles/default"
+local mdir = pathJoin(mroot,"gnu")
 append_path("MODULEPATH",mdir)
 
 -- Set compiler variables for build systems

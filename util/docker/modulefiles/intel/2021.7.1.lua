@@ -21,8 +21,8 @@ Website: https://software.intel.com/en-us/parallel-studio-xe
 
 
 -- Update modulepath to contain correct dependent module tree
-local mroot = "/usr/local"
-local mdir = pathJoin(mroot,"intel/2021.7.1")
+local mroot = "/usr/local/modulefiles/default"
+local mdir = pathJoin(mroot,"intel")
 append_path("MODULEPATH",mdir)
 
 -- Set compiler variables for build systems

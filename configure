@@ -30,6 +30,32 @@ while true; do
     esac
 done
 
+HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+
+if [ ! -z ${HASH_ID} ]; then
+while true; do
+
+    echo 
+    read -p "  Docker container is running. Do you wish to stop it? [Y/n] " opt
+    echo
+    
+    case $opt in
+       "Y")
+          echo "  Stopping container $HASH_ID"
+          docker stop $HASH_ID
+          echo "  Done."
+          ;;
+      "n")
+          break
+          ;;
+      *)
+         echo "ERROR: Option $opt not valid. Try again..."
+         echo   
+     ;;
+    esac
+done
+fi
+
 ROOT_DIR=`pwd`
 cat << EOF > docker-compose.yml
 version: "3.9"
@@ -43,7 +69,7 @@ services:
       - "7777:9000"
     volumes:
       - "${ROOT_DIR}:/home/container"
-    command: bash -c 'echo "source /etc/profile.d/lmod.sh" > .bashrc && echo "module load $COMP_NAME" >> .bashrc && tail -f /dev/null'
+    command: bash -c 'echo "source /etc/profile.d/lmod.sh" > .bashrc && echo "export MODULEPATH=/usr/local/modulefiles/compilers" >> .bashrc && echo "module load $COMP_NAME zlib netcdf" >> .bashrc && tail -f /dev/null'
 
 EOF
 

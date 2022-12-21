@@ -61,4 +61,6 @@ if __name__ == "__main__":
         quit()
 
     print("")
+    print("  Script ended at {}".format(datetime.now()))
+    print("=============================================")
     print()

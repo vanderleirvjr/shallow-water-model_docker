@@ -18,7 +18,7 @@ model_core.o: model_core.f90 system_state.o kinds.o \
 system_state.o: system_state.f90 kinds.o gridinfo.o \
               constants.o
 kinds.o: kinds.f90 
-physics.o: physics.f90 kinds.o system_state.o
+physics.o: physics.f90 kinds.o system_state.o constants.o
 gridinfo.o: gridinfo.f90 kinds.o
 
 %.o: %.f90

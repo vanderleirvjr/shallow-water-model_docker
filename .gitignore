@@ -6,3 +6,4 @@ docker-compose.yml
 config.in
 .*
 Makefile
+swf_*

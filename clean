@@ -1,20 +1,28 @@
 #!/bin/bash
 
+cd ./src
+
+make clean
+
+cd .. 
+
 if [ ! -z ${1} ]; then
   if [ ${1} == "-a" ]; then
       rm -rf ./bin
       rm -rf ./Dockerfile
       rm -rf ./docker-compose.yml
       rm -rf ./config.in
+      HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+      if [ ! -z $HASH_ID ]; then 
+          echo "Stopping container..."
+          docker stop $HASH_ID
+          echo "Done."
+      fi
   else
       echo "Option ${1} does not exist."
       exit
   fi
 fi
-
-cd ./src
-
-make clean
 
 rm -rf ../.local
 

@@ -2,6 +2,7 @@ module system_state
 
     use gridinfo, only: grid2d
     use kinds, only: i_kind, r_kind
+    use constants, only: PI
 
     implicit none
 

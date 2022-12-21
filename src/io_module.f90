@@ -86,21 +86,26 @@ module io_module
             type(grid2d), intent(in)           :: grid
             type(namelist_options), intent(in) :: opt
             integer, intent(in)                :: iteration
-            integer                            :: seconds, minutes, hours
+            integer                            :: mili, seconds, minutes, hours
             integer                            :: ncid, uvarid, vvarid, hvarid, xvarid, yvarid, xdimid, ydimid
-            character(len=200)                 :: file_name, xsec, xmin, xhour
+            character(len=200)                 :: file_name, xsec, xmin, xhour, xmili
             integer, dimension(:), allocatable :: dimids              
 
-            seconds = iteration - 1
+            mili = (iteration - 1)*opt%dt*1000
+            seconds = 0
             minutes = 0
             hours = 0
-
-            if ( seconds > 59 ) then
-                minutes = (seconds - MOD(seconds,60))/60
-                seconds = MOD(seconds,60)
-                if ( minutes > 59 ) then
-                    hours = (minutes - MOD(minutes,60))/60
-                    minutes = MOD(minutes,60)
+            
+            if ( mili > 999 ) then
+                seconds = (mili - MOD(mili,1000))/1000
+                mili = MOD(mili,1000)
+                if ( seconds > 59 ) then
+                    minutes = (seconds - MOD(seconds,60))/60
+                    seconds = MOD(seconds,60)
+                    if ( minutes > 59 ) then
+                        hours = (minutes - MOD(minutes,60))/60
+                        minutes = MOD(minutes,60)
+                    end if
                 end if
             end if
 
@@ -123,8 +128,17 @@ module io_module
             else 
                 write(xhour,'(I3)') hours
             end if
+    
+            if ( mili < 10 ) then 
+                write(xmili,'(A2,I1)') "00", mili
+            else if ( mili < 100 ) then 
+                write(xmili,'(A1,I2)') "0", mili
+            else 
+                write(xmili,'(I3)') mili
+            end if
 
-            write(file_name,"(A,'_',A3,':',A2,':',A2,A4)") trim(opt%output_file_name_prefix), xhour, xmin, xsec, ".nc4"
+            write(file_name,"(A,'_',A3,':',A2,':',A2,'.',A3,A4)") trim(opt%output_file_name_prefix), xhour, xmin, &
+            xsec, xmili, ".nc4"
 
             ! Create the netCDF file. The nf90_clobber parameter tells netCDF to
             ! overwrite this file, if it already exists.

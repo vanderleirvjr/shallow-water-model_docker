@@ -41,7 +41,7 @@ module model_core
 
             do i = 1, iterations + 1
                 
-                if ( mod((i-1)*opt%dt,opt%history_interval) == 0 ) then
+                if ( mod((i-1)*opt%dt*1000,opt%history_interval*1000) == 0 ) then
                     call CPU_TIME(start)
                     write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
                     call write_output(grid,opt,i)

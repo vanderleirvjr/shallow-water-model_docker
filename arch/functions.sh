@@ -21,7 +21,7 @@ build_container() {
 while true; do
 
     echo 
-    read -p "  Found image called intel/oneapi-hpckit. Do you want to build another image? [Y/n] " opt
+    read -p "  Found image called intel/oneapi-hpckit. Do you want to rebuild the image? [Y/n] " opt
     echo
     
     case $opt in

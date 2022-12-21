@@ -20,7 +20,7 @@ module model_core
 
             call read_namelist(opt)
 
-            call initialize_grid(opt%nx,opt%ny,grid)
+            call initialize_grid(opt%nx,opt%ny,opt%dx,opt%dy,grid)
 
             call initial_conditions(grid)
 

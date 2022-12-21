@@ -44,10 +44,10 @@ module model_core
                 
                 if ( mod((i-1)*opt%dt,opt%history_interval) == 0 .AND.  i .NE. 1 ) then
                     call CPU_TIME(start)
-                    elapsed = finish - start
                     write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
                     call write_output(grid,opt,i)
                     call CPU_TIME(finish)
+                    elapsed = finish - start
                     write(stdout,'("Done. Time elapsed = ",F8.4)') elapsed
                 end if
                 

@@ -4,8 +4,10 @@ module gridinfo
 
     type grid2d
 
-        integer(kind=i_kind) :: nx 
-        integer(kind=i_kind) :: ny 
+        integer(kind=i_kind)                       :: nx 
+        integer(kind=i_kind)                       :: ny 
+        real(kind=r_kind), pointer, dimension(:)   :: x
+        real(kind=r_kind), pointer, dimension(:)   :: y
 
         real(kind=r_kind), pointer, dimension(:,:) :: uwnd
         real(kind=r_kind), pointer, dimension(:,:) :: vwnd

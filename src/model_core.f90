@@ -41,9 +41,10 @@ module model_core
 
             do i = 1, iterations + 1
 
-                if ( mod((i-1)*opt%dt,opt%time_step) == 0 ) then
+                if ( mod((i-1)*opt%dt,opt%history_interval) == 0 ) then
                     elapsed = 0
                     write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
+                    call write_output(grid,opt,i)
                     write(stdout,'("Done. Time elapsed = ",F6.4)') elapsed
                 end if 
 
@@ -53,8 +54,6 @@ module model_core
                 call update_height
     
                 grid = new_grid
-
-                call write_output(grid)
     
             end do
 

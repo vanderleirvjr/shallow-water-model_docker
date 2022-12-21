@@ -7,18 +7,21 @@ module io_module
 
     implicit none
 
-    public :: read_namelist, write_output, namelist_options
+    public  :: read_namelist, write_output, namelist_options
     private
 
     type namelist_options
         
         integer(kind=i_kind) :: nx
         integer(kind=i_kind) :: ny
+        real(kind=r_kind)    :: dx
+        real(kind=r_kind)    :: dy
 
         real(kind=r_kind) :: dt
         real(kind=r_kind) :: run_time
 
-        real(kind=r_kind) :: time_step
+        real(kind=r_kind) :: history_interval
+        character(len=100) :: output_file_name_prefix
 
     end type namelist_options
     

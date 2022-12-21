@@ -87,7 +87,7 @@ module io_module
             type(namelist_options), intent(in) :: opt
             integer, intent(in)                :: iteration
             integer                            :: seconds, minutes, hours
-            integer                            :: ncid, uvarid, vvarid, hvarid, xdimid, ydimid
+            integer                            :: ncid, uvarid, vvarid, hvarid, xvarid, yvarid, xdimid, ydimid
             character(len=200)                 :: file_name, xsec, xmin, xhour
             integer, dimension(:), allocatable :: dimids              
 
@@ -131,8 +131,8 @@ module io_module
             call check( nf90_create(file_name, NF90_CLOBBER, ncid) )
 
             ! Define the dimensions. NetCDF will hand back an ID for each. 
-            call check( nf90_def_dim(ncid, "x", grid%nx, xdimid) )
-            call check( nf90_def_dim(ncid, "y", grid%ny, ydimid) )
+            call check( nf90_def_dim(ncid, "X", grid%nx, xdimid) )
+            call check( nf90_def_dim(ncid, "Y", grid%ny, ydimid) )
 
             ! The dimids array is used to pass the IDs of the dimensions of
             ! the variables. Note that in fortran arrays are stored in
@@ -140,7 +140,12 @@ module io_module
             dimids =  (/ ydimid, xdimid /)
 
             ! Define the variable. The type of the variable in this case is
-            ! NF90_INT (4-byte integer).
+            call check( nf90_def_var(ncid, "Xc", NF90_DOUBLE, xdimid, xvarid))
+            call check( nf90_put_att(ncid, xvarid, "description", "x coordinate"))
+            call check( nf90_put_att(ncid, xvarid, "units", "m"))
+            call check( nf90_def_var(ncid, "Yc", NF90_DOUBLE, ydimid, yvarid))
+            call check( nf90_put_att(ncid, yvarid, "description", "y coordinate"))
+            call check( nf90_put_att(ncid, yvarid, "units", "m"))
             call check( nf90_def_var(ncid, "uwnd", NF90_DOUBLE, dimids, uvarid))
             call check( nf90_put_att(ncid, uvarid, "description", "x-component of the wind"))
             call check( nf90_put_att(ncid, uvarid, "units", "m/s"))
@@ -157,6 +162,8 @@ module io_module
             ! Write the intent data to the file. Although netCDF supports
             ! reading and writing subsets of data, in this case we write all the
             ! data in one operation.
+            call check( nf90_put_var(ncid, xvarid, grid%x))
+            call check( nf90_put_var(ncid, yvarid, grid%y))
             call check( nf90_put_var(ncid, uvarid, grid%uwnd))
             call check( nf90_put_var(ncid, vvarid, grid%vwnd))
             call check( nf90_put_var(ncid, hvarid, grid%height))

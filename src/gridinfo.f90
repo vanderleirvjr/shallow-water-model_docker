@@ -8,6 +8,8 @@ module gridinfo
         integer(kind=i_kind)                       :: ny 
         real(kind=r_kind), pointer, dimension(:)   :: x
         real(kind=r_kind), pointer, dimension(:)   :: y
+        real(kind=r_kind)                          :: dx 
+        real(kind=r_kind)                          :: dy 
 
         real(kind=r_kind), pointer, dimension(:,:) :: uwnd
         real(kind=r_kind), pointer, dimension(:,:) :: vwnd

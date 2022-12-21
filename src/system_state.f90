@@ -36,6 +36,9 @@ module system_state
                 grid%y(i) = (i - 1)*dy 
             end do
 
+            grid%dx = dx 
+            grid%dy = dy
+
             return
 
         end subroutine initialize_grid

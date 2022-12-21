@@ -5,7 +5,7 @@ module model_core
     use kinds, only: r_kind, i_kind 
     use gridinfo, only: grid2d
     use io_module, only: read_namelist, write_output, namelist_options
-    use physics, only: update_height, update_wnd
+    use physics, only: update_state
 
     implicit none
 
@@ -40,9 +40,8 @@ module model_core
             iterations = int(opt%run_time / opt%dt)
 
             do i = 1, iterations + 1
-
                 
-                if ( mod((i-1)*opt%dt,opt%history_interval) == 0 .AND.  i .NE. 1 ) then
+                if ( mod((i-1)*opt%dt,opt%history_interval) == 0 ) then
                     call CPU_TIME(start)
                     write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
                     call write_output(grid,opt,i)
@@ -50,12 +49,8 @@ module model_core
                     elapsed = finish - start
                     write(stdout,'("Done. Time elapsed = ",F8.4)') elapsed
                 end if
-                
 
-
-                call update_wnd(grid)
-
-                call update_height(grid)
+                call update_state(grid,opt%dt)
     
             end do
 

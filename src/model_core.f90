@@ -35,17 +35,22 @@ module model_core
             integer              :: i, iterations
             integer(kind=i_kind) :: stdout
             real(kind=r_kind)    :: elapsed
+            real(kind=r_kind)    :: start, finish
 
             iterations = int(opt%run_time / opt%dt)
 
             do i = 1, iterations + 1
 
-                if ( mod((i-1)*opt%dt,opt%history_interval) == 0 ) then
-                    elapsed = 0
+                
+                if ( mod((i-1)*opt%dt,opt%history_interval) == 0 .AND.  i -ne 1 ) then
+                    call CPU_TIME(finish)
+                    elapsed = finish - start
                     write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
                     call write_output(grid,opt,i)
-                    write(stdout,'("Done. Time elapsed = ",F6.4)') elapsed
-                end if 
+                    write(stdout,'("Done. Time elapsed = ",F8.4)') elapsed
+                end if
+                call CPU_TIME(start)
+
 
                 call update_wnd(grid)
 

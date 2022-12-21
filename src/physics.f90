@@ -43,10 +43,10 @@ module physics
                 if ( yr > grid%ny ) then
                     yr = 1
                 end if
-                term1 = grid%uwnd(i,j) * ( grid%uwnd(xr,j) - 2*grid%uwnd(i,j) + grid%uwnd(xl,j) ) / grid%dx
-                term2 = grid%vwnd(i,j) * ( grid%uwnd(i,yr) - 2*grid%uwnd(i,j) + grid%uwnd(i,yl) ) / grid%dy
-                term3 = GRAV * ( grid%height(xr,j) - 2*grid%height(i,j) + grid%height(xl,j) ) / grid%dx 
-                uwnd(i,j) = grid%uwnd(i,j) - ( dt / 2 ) * ( term1 + term2 + term3 ) 
+                term1 = grid%uwnd(i,j) * ( grid%uwnd(xr,j) - 2*grid%uwnd(i,j) + grid%uwnd(xl,j) ) / grid%dx * grid%dx
+                term2 = grid%vwnd(i,j) * ( grid%uwnd(i,yr) - 2*grid%uwnd(i,j) + grid%uwnd(i,yl) ) / grid%dy * grid%dy
+                term3 = GRAV * ( grid%height(xr,j) - 2*grid%height(i,j) + grid%height(xl,j) ) / grid%dx * grid%dx
+                uwnd(i,j) = grid%uwnd(i,j) - dt * ( term1 + term2 + term3) 
             end do
         end do
 
@@ -68,43 +68,44 @@ module physics
                 if ( yr > grid%ny ) then
                     yr = 1
                 end if
-                term1 = grid%uwnd(i,j) * ( grid%vwnd(xr,j) - 2*grid%vwnd(i,j) + grid%vwnd(xl,j) ) / grid%dx
-                term2 = grid%vwnd(i,j) * ( grid%vwnd(i,yr) - 2*grid%vwnd(i,j) + grid%vwnd(i,yl) ) / grid%dy 
-                term3 = GRAV * ( grid%height(i,yr) - 2*grid%height(i,j) + grid%height(i,yl) ) / grid%dy 
-                vwnd(i,j) = grid%vwnd(i,j) - ( dt / 2 ) * ( term1 + term2 + term3 ) 
-            end do
-        end do
-
-        do i = 1, grid%nx
-            do j = 1, grid%ny
-                xl = i - 1
-                xr = i + 1
-                yl = j - 1
-                yr = j + 1
-                if ( xl == 0 ) then
-                    xl = grid%nx
-                end if
-                if ( xr > grid%nx ) then
-                    xr = 1
-                end if
-                if ( yl == 0 ) then
-                    yl = grid%ny
-                end if
-                if ( yr > grid%ny ) then
-                    yr = 1
-                end if
-                term1 = grid%uwnd(i,j) * ( grid%height(xr,j) - 2*grid%height(i,j) + grid%height(xl,j) ) / grid%dx 
-                term2 = (mheight + grid%height(i,j) ) * ( grid%uwnd(xr,j) - 2*grid%uwnd(i,j) + grid%uwnd(xl,j) ) / grid%dx
-                term3 = grid%vwnd(i,j) * ( grid%height(i,yr) - 2*grid%height(i,j) + grid%height(i,yl) ) / grid%dy
-                term4 = (mheight + grid%height(i,j) ) * ( grid%uwnd(i,yr) -2*grid%uwnd(i,j) + grid%uwnd(i,yl) ) / grid%dy
-                height(i,j) = grid%height(i,j) - ( dt / 2 ) * ( term1 + term2 + term3 + term4 )
+                term1 = grid%uwnd(i,j) * ( grid%vwnd(xr,j) - 2*grid%vwnd(i,j) + grid%vwnd(xl,j) ) / grid%dx * grid%dx
+                term2 = grid%vwnd(i,j) * ( grid%vwnd(i,yr) - 2*grid%vwnd(i,j) + grid%vwnd(i,yl) ) / grid%dy * grid%dy
+                term3 = GRAV * ( grid%height(i,yr) - 2*grid%height(i,j) + grid%height(i,yl) ) / grid%dy * grid%dy
+                vwnd(i,j) = grid%vwnd(i,j) - dt * ( term1 + term2 + term3) 
             end do
         end do
 
         grid%uwnd = uwnd
         grid%vwnd = vwnd
-        grid%height = height
 
+        do i = 1, grid%nx
+            do j = 1, grid%ny
+                xl = i - 1
+                xr = i + 1
+                yl = j - 1
+                yr = j + 1
+                if ( xl == 0 ) then
+                    xl = grid%nx
+                end if
+                if ( xr > grid%nx ) then
+                    xr = 1
+                end if
+                if ( yl == 0 ) then
+                    yl = grid%ny
+                end if
+                if ( yr > grid%ny ) then
+                    yr = 1
+                end if
+                term1 = grid%uwnd(i,j) * ( grid%height(xr,j) - 2*grid%height(i,j) + grid%height(xl,j) ) / grid%dx * grid%dx 
+                term2 = (mheight + grid%height(i,j) ) * ( grid%uwnd(xr,j) - 2*grid%uwnd(i,j) + grid%uwnd(xl,j) ) / grid%dx * grid%dx 
+                term3 = grid%vwnd(i,j) * ( grid%height(i,yr) - 2*grid%height(i,j) + grid%height(i,yl) ) / grid%dy * grid%dy
+                term4 = (mheight + grid%height(i,j) ) * ( grid%vwnd(i,yr) -2*grid%vwnd(i,j) + grid%vwnd(i,yl) ) / grid%dy * grid%dy
+                height(i,j) = grid%height(i,j) - dt * ( term1 + term2 + term3 + term4 )
+            end do
+        end do
+
+        grid%height = height
+        
         return
 
     end subroutine update_state

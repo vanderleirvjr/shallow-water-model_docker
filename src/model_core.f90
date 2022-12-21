@@ -32,7 +32,6 @@ module model_core
 
             implicit none
 
-            type(grid2d)         :: new_grid
             integer              :: i, iterations
             integer(kind=i_kind) :: stdout
             real(kind=r_kind)    :: elapsed
@@ -48,12 +47,9 @@ module model_core
                     write(stdout,'("Done. Time elapsed = ",F6.4)') elapsed
                 end if 
 
-                new_grid = grid 
+                call update_wnd(grid)
 
-                call update_wnd
-                call update_height
-    
-                grid = new_grid
+                call update_height(grid)
     
             end do
 

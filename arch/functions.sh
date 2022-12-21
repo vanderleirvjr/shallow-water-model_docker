@@ -27,6 +27,7 @@ while true; do
     case $opt in
        "Y")
           docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
+          break
           ;;
       "n")
           break

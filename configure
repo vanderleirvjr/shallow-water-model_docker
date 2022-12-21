@@ -44,6 +44,7 @@ while true; do
           echo "  Stopping container $HASH_ID"
           docker stop $HASH_ID
           echo "  Done."
+          break
           ;;
       "n")
           break

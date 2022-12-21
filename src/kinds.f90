@@ -29,7 +29,7 @@ module kinds
     integer, parameter, public  :: i_kind = integer_types(default_integer)
 
 ! real default types
-    integer, parameter, private :: default_real = 1 
+    integer, parameter, private :: default_real = 2 
 
 #ifdef _REAL8_
     default_real = 2  ! 2=double, 

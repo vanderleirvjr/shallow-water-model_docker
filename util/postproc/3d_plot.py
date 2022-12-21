@@ -44,9 +44,9 @@ if __name__ == "__main__":
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
-        ax.set_zlim3d(-4,4)
-        surf = ax.plot_surface(X, Y, height, cmap="OrRd",
-                     linewidth=0, antialiased=True, vmin = -4, vmax = 4)
+        ax.set_zlim3d(-2,2)
+        surf = ax.plot_surface(X, Y, height - 1000, cmap="OrRd",
+                     linewidth=0, antialiased=True, vmin = -1, vmax = 1)
         #ax.view_init(elev=90, azim=0)
         fig.colorbar(surf, shrink=0.5, aspect=5)
     

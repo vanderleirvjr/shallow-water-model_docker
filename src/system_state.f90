@@ -48,9 +48,9 @@ module system_state
 
             do i = 1, grid%nx
                 do j = 1, grid%ny 
-                    grid%uwnd(i,j) = 0.
-                    grid%vwnd(i,j) = 0.
-                    grid%height(i,j) = 0.
+                    grid%uwnd(i,j) = 2.
+                    grid%vwnd(i,j) = -1.
+                    grid%height(i,j) = 2*cos( sqrt((i-5.)*(i-5.) + (j-5.)*(j-5.)))
                 end do 
             end do
 

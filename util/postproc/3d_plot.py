@@ -28,7 +28,7 @@ if __name__ == "__main__":
     for i in files:
        
         start = time.time()
-        output_name = i.split("/")[-1].split(".")[0]
+        output_name = ".".join(i.split("/")[-1].split(".")[0:2])
 
         print("  - Processing {}.nc4...".format(output_name))
 
@@ -58,7 +58,6 @@ if __name__ == "__main__":
         end = time.time()
         print("  Done. Time elapsed = {} seconds".format(round(end-start,2)))
 
-        quit()
 
     print("")
     print("  Script ended at {}".format(datetime.now()))

@@ -70,7 +70,8 @@ services:
       - "7777:9000"
     volumes:
       - "${ROOT_DIR}:/home/container"
-    command: bash -c 'echo "source /etc/profile.d/lmod.sh" > .bashrc && echo "export MODULEPATH=/usr/local/modulefiles/compilers" >> .bashrc && echo "module load $COMP_NAME zlib netcdf" >> .bashrc && tail -f /dev/null'
+    command: bash -c 'echo "source /etc/profile.d/lmod.sh" > .bashrc && echo "export MODULEPATH=/usr/local/modulefiles/compilers" >> .bashrc && echo "module load $COMP_NAME zlib netcdf" >> .bashrc && 
+                      echo "export PATH=/opt/conda/bin:\$\${PATH}" >> .bashrc && echo "export CONDA_DIR=/opt/conda" >> .bashrc && tail -f /dev/null'
 
 EOF
 

@@ -3,6 +3,8 @@ FROM intel/oneapi-hpckit:latest
 
 RUN apt-get -y update
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 ADD ./util/docker/system_requirements.txt /system_requirements.txt 
 
 RUN apt-get install -y --no-install-recommends  $(cat /system_requirements.txt)
@@ -48,6 +50,10 @@ ARG  LD_LIBRARY_PATH="/usr/local/default/gnu/netcdf/lib:/usr/local/default/gnu/z
 RUN  mkdir -p /usr/local/default/gnu/netcdf && cd /usr/local/default/gnu/netcdf  &&  wget --no-check-certificate  https://downloads.unidata.ucar.edu/netcdf-c/4.9.0/netcdf-c-4.9.0.tar.gz &&  tar -zxf netcdf-c-4.9.0.tar.gz &&  cd netcdf-c-4.9.0 &&  CXX=g++ CC=gcc FC=gfortran CPPFLAGS="-I/usr/local/default/gnu/zlib/include -I/usr/local/default/gnu/hdf5/include" LDFLAGS="-L/usr/local/default/gnu/zlib/lib -L/usr/local/default/gnu/hdf5/lib" ./configure --prefix=/usr/local/default/gnu/netcdf --enable-fortran=yes &&  make -j 4 &&  make install &&  cd /usr/local/default/gnu/netcdf &&  rm -rf netcdf-c-4.9.0.tar.gz 
 RUN  mkdir -p /usr/local/default/gnu/netcdf && cd /usr/local/default/gnu/netcdf  &&  wget --no-check-certificate https://downloads.unidata.ucar.edu/netcdf-fortran/4.5.3/netcdf-fortran-4.5.3.tar.gz &&  tar -zxvf netcdf-fortran-4.5.3.tar.gz &&  cd netcdf-fortran-4.5.3 &&  CXX=g++ CC=gcc FC=gfortran CPPFLAGS="-I/usr/local/default/gnu/netcdf/include -I/usr/local/default/gnu/zlib/include -I/usr/local/default/gnu/hdf5/include" LDFLAGS="-L/usr/local/default/gnu/netcdf/lib -L/usr/local/default/gnu/zlib/lib -L/usr/local/default/gnu/hdf5/lib" ./configure --prefix=/usr/local/default/gnu/netcdf &&  make -j 4 &&  make install &&  cd /usr/local/default/gnu/netcdf &&  rm -rf netcdf-fortran-4.5.3.tar.gz
 
+RUN wget --no-check-certificate  https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh && /bin/bash Anaconda3-2022.10-Linux-x86_64.sh -b -p /opt/conda
+
 USER container:container
 
+RUN /opt/conda/bin/pip install netcdf4
+RUN /opt/conda/bin/pip install matplotlib 
 

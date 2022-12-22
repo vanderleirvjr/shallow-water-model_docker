@@ -16,7 +16,6 @@ build_container() {
 
     IMAGE=`docker images | grep intel/oneapi-hpckit`
 
-
     if [ ! -z $IMAGE ]; then
         while true; do
 
@@ -45,6 +44,27 @@ build_container() {
 
     ROOT_DIR=`pwd`
 
+cat << EOF > ./bin/run
+
+#!/bin/bash
+
+USER=\`whoami\`
+
+if [ \${USER} != 'container' ]; then
+  echo
+  echo "  ERROR: Connect to the container first."
+  echo
+  exit
+fi
+
+cd \${HOME}/bin
+
+../src/swf.exe
+
+EOF
+
+chmod 755 ./bin/run
+
 cat << EOF > ./bin/connect
 
 #!/bin/bash
@@ -61,6 +81,8 @@ fi
 docker exec -it \${HASH_ID} bash
 
 EOF
+
+chmod 755 ./bin/connect
 
 YML_FILE="${ROOT_DIR}/docker-compose.yml"
 cat << EOF > ./bin/start
@@ -80,6 +102,8 @@ docker-compose -f ${YML_FILE} up -d
 
 EOF
 
+chmod 755 ./bin/start
+
 cat << EOF > ./bin/stop
 
 #!/bin/bash
@@ -97,6 +121,7 @@ docker stop \${HASH_ID}
 
 EOF
 
+chmod 755 ./bin/stop
 
 }
 

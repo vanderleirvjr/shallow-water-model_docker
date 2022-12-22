@@ -54,7 +54,7 @@ module system_state
                 do j = 1, grid%ny 
                     grid%uwnd(i,j) = 0.3
                     grid%vwnd(i,j) = 0.
-                    grid%height(i,j) = 1000 + 1.5/1.1**exp( sqrt((i-20.)*(i-20.) + (j-20.)*(j-20.)) )
+                    grid%height(i,j) = 1000 + 10/1.1**exp( sqrt((i-20.)*(i-20.) + (j-20.)*(j-20.)) )
                     !grid%height(i,j) = 1000 + 2*cos( 3.141592 * sqrt((i-100.)*(i-100.) + (j-100.)*(j-100.)) / 100)
                 end do 
             end do

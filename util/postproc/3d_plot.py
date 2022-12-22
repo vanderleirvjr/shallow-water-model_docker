@@ -7,6 +7,7 @@ from mpl_toolkits import mplot3d
 import netCDF4
 import time
 from datetime import datetime
+import os
 
 
 if __name__ == "__main__":
@@ -22,15 +23,24 @@ if __name__ == "__main__":
 
     files = sorted(glob.glob(file_path))
 
+    if ( len(files) == 0 ):
+        print("No files found!")
+        print("")
+        quit() 
+
     print("  - Found {} files".format(len(files)))
     print("")
 
     for i in files:
        
         start = time.time()
-        output_name = ".".join(i.split("/")[-1].split(".")[0:2])
+        output_name = ".".join(i.split("/")[-1].split(".")[0:2]) + ".nc4"
 
-        print("  - Processing {}.nc4...".format(output_name))
+        print("  - Processing {}...".format(output_name))
+
+        if os.path.exists(output_name):
+            print("  File {} already exists.".format(output_name))
+            continue
 
         nc = netCDF4.Dataset(i,"r")
 

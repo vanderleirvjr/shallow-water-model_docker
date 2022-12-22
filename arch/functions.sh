@@ -16,9 +16,9 @@ build_container() {
 
     IMAGE=`docker images | grep intel/oneapi-hpckit`
 
-    opt="n"
+
     if [ ! -z $IMAGE ]; then
-while true; do
+        while true; do
 
     echo 
     read -p "  Found image called intel/oneapi-hpckit. Do you want to rebuild the image? [Y/n] " opt
@@ -37,7 +37,10 @@ while true; do
          echo   
      ;;
     esac
-done
+
+        done
+    else 
+        docker build -f ./util/docker/Dockerfile -t intel/oneapi-hpckit:1.0 .
     fi
 
     ROOT_DIR=`pwd`

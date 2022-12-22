@@ -44,11 +44,6 @@ while true; do
             build_makefile
             if [ $is_container == "false" ]; then
                 build_container
-                cd ./bin
-                chmod 755 ./start 
-                chmod 755 ./connect
-                chmod 755 ./stop
-                cd ..
             fi
             ./bin/start
             cp -Rf ./util/docker/comp.sh .

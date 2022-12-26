@@ -6,6 +6,5 @@ module constants
 
     real(kind=r_kind) :: PI=4.D0*datan(1.D0)
     real(kind=r_kind) :: GRAV=-9.81
-    real(kind=r_kind) :: mheight = 2.
 
 end module constants

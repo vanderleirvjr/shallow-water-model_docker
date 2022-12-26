@@ -1,5 +1,8 @@
 module constants
 
+! This module contains constants that are used during the
+! model integration.
+
     use kinds, only: i_kind, r_kind
 
     implicit none 

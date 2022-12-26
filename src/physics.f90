@@ -1,5 +1,14 @@
 module physics
 
+! This module contains subroutines to update the system state.
+! It is used the finite differences method FTCS (Forward Time Centered Space)
+! to estimate the future state of the variables uwnd, vwnd, and height.
+
+! The boundary conditions is updated each time step using the subroutine update_bc.
+! The boundaries of each variable are duplicated into a new variable which
+! in turn is used to calculate the next time step. The variable is then copied back
+! into the grid variable
+
     use kinds, only: i_kind, r_kind
     use system_state, only: grid2d
     use constants, only: GRAV

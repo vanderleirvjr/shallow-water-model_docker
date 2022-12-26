@@ -1,6 +1,14 @@
 module gridinfo
 
+! This module contains the main types used to define the
+! model grid and properties.
+
     use kinds, only: r_kind, i_kind 
+
+    implicit none
+
+    public :: grid2d
+    private
 
     type grid2d
 

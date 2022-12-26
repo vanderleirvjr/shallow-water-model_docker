@@ -1,5 +1,8 @@
 module kinds
 
+! This module holds specification kinds for variable declaration.
+! This code is based on GSI's kinds module.
+
     implicit none
 
 ! Integer types    

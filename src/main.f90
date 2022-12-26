@@ -1,5 +1,8 @@
 program shallow_water
 
+! This is the main program responsible to call the
+! main subroutines.
+
     use model_core, only: initialize, run, finalize
 
     implicit none

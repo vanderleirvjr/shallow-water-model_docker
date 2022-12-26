@@ -1,5 +1,9 @@
 module io_module
 
+! This module contains subroutines to read the namelist variables
+! and write the output files according to the specifications on
+! the namelist.
+
     use, intrinsic :: iso_fortran_env, only: stderr => error_unit, stdout => output_unit
     use kinds, only: i_kind, r_kind
     use system_state, only: grid2d

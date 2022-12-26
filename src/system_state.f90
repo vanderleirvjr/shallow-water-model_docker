@@ -1,10 +1,16 @@
 module system_state
 
+! This module initializes the grid variables and initial conditions
+! associated with it.
+
     use gridinfo, only: grid2d
     use kinds, only: i_kind, r_kind
     use constants, only: PI
 
     implicit none
+
+    public :: initialize_grid, initial_conditions
+    private
 
     contains
 

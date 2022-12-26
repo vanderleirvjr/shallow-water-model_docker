@@ -1,5 +1,8 @@
 module model_core
 
+! This module contains the main subroutines responsible for initialize,
+! integrate, and finalize the model.
+
     use, intrinsic :: iso_fortran_env, only: stdout => output_unit
     use system_state, only: initialize_grid, initial_conditions
     use kinds, only: r_kind, i_kind 
@@ -8,6 +11,9 @@ module model_core
     use physics, only: update_state
 
     implicit none
+
+    public :: initialize, run, finalize
+    private
 
     type(grid2d) :: grid
     type(namelist_options) :: opt

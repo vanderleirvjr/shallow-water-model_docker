@@ -8,6 +8,11 @@ dy = 0.5
 dt = 1
 run_time = 100
 /
+&parameters
+mheight = 2.
+bc = 0.
+fc = 0.
+/
 &io
 history_interval = 5
 output_file_name_prefix = "swf"

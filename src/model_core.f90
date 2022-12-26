@@ -50,7 +50,7 @@ module model_core
                     write(stdout,'("Done. Time elapsed = ",F8.4)') elapsed
                 end if
 
-                call update_state(grid,opt%dt)
+                call update_state(grid,opt%dt,opt%mheight,opt%fc,opt%bc)
     
             end do
 

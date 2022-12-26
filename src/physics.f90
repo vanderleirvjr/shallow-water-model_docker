@@ -2,7 +2,7 @@ module physics
 
     use kinds, only: i_kind, r_kind
     use system_state, only: grid2d
-    use constants, only: GRAV, mheight
+    use constants, only: GRAV
      
     implicit none
 
@@ -11,12 +11,15 @@ module physics
 
     contains
 
-    subroutine update_state(grid,dt)
+    subroutine update_state(grid,dt,mheight,fc,bc)
 
         implicit none
 
         type(grid2d), intent(inout)                    :: grid
         real(kind=r_kind), intent(in)                  :: dt
+        real(kind=r_kind), intent(in)                  :: mheight
+        real(kind=r_kind), intent(in)                  :: bc
+        real(kind=r_kind), intent(in)                  :: fc
         real(kind=r_kind), dimension(:,:), allocatable :: uwnd, vwnd, height
         real(kind=r_kind), dimension(:,:), allocatable :: tuwnd, tvwnd, theight
         integer                                        :: i, j
@@ -40,7 +43,7 @@ module physics
                 term1 = uwnd(i,j) * ( uwnd(i+1,j) - 2*uwnd(i,j) + uwnd(i-1,j) ) / grid%dx * grid%dx
                 term2 = vwnd(i,j) * ( uwnd(i,j+1) - 2*uwnd(i,j) + uwnd(i,j-1) ) / grid%dy * grid%dy
                 term3 = GRAV * ( height(i+1,j) - 2*height(i,j) + height(i-1,j) ) / grid%dx * grid%dx
-                tuwnd(i,j) = uwnd(i,j) - dt * ( term1 + term2 + term3) 
+                tuwnd(i,j) = uwnd(i,j) - dt * ( term1 + term2 + term3 - fc*vwnd(i,j)) 
             end do
         end do
 
@@ -49,7 +52,7 @@ module physics
                 term1 = uwnd(i,j) * ( vwnd(i+1,j) - 2*vwnd(i,j) + vwnd(i-1,j) ) / grid%dx * grid%dx
                 term2 = vwnd(i,j) * ( vwnd(i,j+1) - 2*vwnd(i,j) + vwnd(i,j-1) ) / grid%dy * grid%dy
                 term3 = GRAV * ( height(i,j+1) - 2*height(i,j) + height(i,j-1) ) / grid%dy * grid%dy
-                tvwnd(i,j) = vwnd(i,j) - dt * ( term1 + term2 + term3) 
+                tvwnd(i,j) = vwnd(i,j) - dt * ( term1 + term2 + term3 + fc*uwnd(i,j) ) 
             end do
         end do
 

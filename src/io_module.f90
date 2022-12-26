@@ -20,6 +20,10 @@ module io_module
         real(kind=r_kind) :: dt
         real(kind=r_kind) :: run_time
 
+        real(kind=r_kind) :: mheight = 2.
+        real(kind=r_kind) :: bc = 0.
+        real(kind=r_kind) :: fc = 0.
+
         real(kind=r_kind) :: history_interval
         character(len=100) :: output_file_name_prefix
 
@@ -41,9 +45,13 @@ module io_module
             real(kind=r_kind)    :: history_interval
             integer(kind=i_kind) :: rc, fu
             character(len=100)   :: file_path = "namelist.input", output_file_name_prefix
+            real(kind=r_kind) :: mheight
+            real(kind=r_kind) :: bc
+            real(kind=r_kind) :: fc
 
             namelist /gridinfo/ nx, ny, dx, dy
             namelist /integration/ dt, run_time
+            namelist /parameters/ mheight, bc, fc
             namelist /io/ history_interval, output_file_name_prefix
 
             inquire (file=file_path, iostat=rc)
@@ -60,6 +68,9 @@ module io_module
             read (nml=integration, iostat=rc, unit=fu)
             if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
 
+            read (nml=parameters, iostat=rc, unit=fu)
+            if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
+
             read (nml=io, iostat=rc, unit=fu)
             if (rc /= 0) write (stderr, '("Error: Invalid namelist format")')
 
@@ -71,6 +82,10 @@ module io_module
 
             opt%run_time = run_time 
             opt%dt = dt
+
+            opt%mheight = mheight
+            opt%bc = bc
+            opt%fc = fc
 
             opt%history_interval = history_interval
             opt%output_file_name_prefix = output_file_name_prefix

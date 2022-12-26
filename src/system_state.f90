@@ -9,7 +9,7 @@ module system_state
 
     implicit none
 
-    public :: initialize_grid, initial_conditions
+    public :: initialize_grid, initial_conditions, grid2d
     private
 
     contains

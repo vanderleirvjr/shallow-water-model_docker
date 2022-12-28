@@ -6,8 +6,9 @@ while true; do
 
     echo 
     echo "  Compiler options available: "
-    echo "  [1] - gnu compiler"
-    echo "  [2] - intel compiler"
+    echo "  [1] - gnu compiler (gcc/gfortran)"
+    echo "  [2] - intel compiler (icc/ifort)"
+    echo "  [3] - MPI intel compiler (mpiicc/mpiifort)"
     echo
     read -p "  Choose option: " opt
     echo
@@ -23,7 +24,12 @@ while true; do
           build_config intel
           break
           ;;
-      *)
+      "3")
+          echo "  MPI intel compiler selected."
+          build_config mpiintel
+          break
+          ;;
+      *)      
          echo "ERROR: Option $opt not valid. Try again..."
          echo   
      ;;
@@ -57,6 +63,10 @@ while true; do
 done
 fi
 
+if [  $COMP_NAME == "mpiintel" ]; then 
+    COMP_NAME="intel"
+fi 
+
 ROOT_DIR=`pwd`
 cat << EOF > docker-compose.yml
 version: "3.9"
@@ -70,6 +80,7 @@ services:
       - "7777:9000"
     volumes:
       - "${ROOT_DIR}:/home/container"
+    shm_size: '4gb'
     command: bash -c 'echo "source /etc/profile.d/lmod.sh" > .bashrc && echo "export MODULEPATH=/usr/local/modulefiles/compilers" >> .bashrc && echo "module load $COMP_NAME zlib netcdf" >> .bashrc && 
                       echo "export PATH=/opt/conda/bin:\$\${PATH}" >> .bashrc && echo "export CONDA_DIR=/opt/conda" >> .bashrc && tail -f /dev/null'
 

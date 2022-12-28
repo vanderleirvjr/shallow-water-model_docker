@@ -1,0 +1,32 @@
+EXE = swf.exe
+
+FC := $(subst $\',,$(FC))
+CPPFLAGS := $(subst $\',,$(CPPFLAGS))
+LDFLAGS := $(subst $\',,$(LDFLAGS))
+FFLAGS := $(subst $\',,$(FFLAGS))
+
+OBJS = main.o system_state.o kinds.o gridinfo.o \
+model_core_mpi.o io_module.o physics_mpi.o constants.o mpi_functions.o
+
+install: $(EXE)
+
+main.o: main.f90 model_core_mpi.o
+constants.o: constants.f90 kinds.o
+io_module.o: io_module.f90 kinds.o system_state.o
+model_core_mpi.o: model_core_mpi.f90 system_state.o kinds.o \
+              gridinfo.o io_module.o physics_mpi.o mpi_functions.o
+system_state.o: system_state.f90 kinds.o gridinfo.o \
+              constants.o
+mpi_functions.o: mpi_functions.f90 kinds.o gridinfo.o
+kinds.o: kinds.f90 
+physics_mpi.o: physics_mpi.f90 kinds.o system_state.o constants.o
+gridinfo.o: gridinfo.f90 kinds.o
+
+%.o: %.f90
+	$(FC) $(FFLAGS) $(CPPFLAGS) $(LDFLAGS) $<
+
+$(EXE): $(OBJS)
+	$(FC) $(OBJS) -o $(EXE) $(CPPFLAGS) $(LDFLAGS)
+
+clean:
+	rm -rf *.exe *.o *.mod

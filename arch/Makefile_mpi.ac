@@ -6,18 +6,17 @@ LDFLAGS := $(subst $\',,$(LDFLAGS))
 FFLAGS := $(subst $\',,$(FFLAGS))
 
 OBJS = main.o system_state.o kinds.o gridinfo.o \
-model_core_mpi.o io_module.o physics_mpi.o constants.o mpi_functions.o
+model_core.o io_module.o physics_mpi.o constants.o
 
 install: $(EXE)
 
-main.o: main.f90 model_core_mpi.o
+main.o: main.f90 model_core.o
 constants.o: constants.f90 kinds.o
 io_module.o: io_module.f90 kinds.o system_state.o
-model_core_mpi.o: model_core_mpi.f90 system_state.o kinds.o \
-              gridinfo.o io_module.o physics_mpi.o mpi_functions.o
+model_core.o: model_core.f90 system_state.o kinds.o \
+              gridinfo.o io_module.o physics_mpi.o
 system_state.o: system_state.f90 kinds.o gridinfo.o \
               constants.o
-mpi_functions.o: mpi_functions.f90 kinds.o gridinfo.o
 kinds.o: kinds.f90 
 physics_mpi.o: physics_mpi.f90 kinds.o system_state.o constants.o
 gridinfo.o: gridinfo.f90 kinds.o

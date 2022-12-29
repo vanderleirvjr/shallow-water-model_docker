@@ -19,9 +19,9 @@ module gridinfo
         real(kind=r_kind)                          :: dx 
         real(kind=r_kind)                          :: dy 
 
-        real(kind=r_kind), pointer, dimension(:,:) :: uwnd
-        real(kind=r_kind), pointer, dimension(:,:) :: vwnd
-        real(kind=r_kind), pointer, dimension(:,:) :: height
+        real(kind=r_kind), pointer, dimension(:,:), contiguous :: uwnd
+        real(kind=r_kind), pointer, dimension(:,:), contiguous :: vwnd
+        real(kind=r_kind), pointer, dimension(:,:), contiguous :: height
 
     end type grid2d
 

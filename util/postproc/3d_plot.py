@@ -65,7 +65,7 @@ if __name__ == "__main__":
         ax.plot(yc, height[:][ym], zs = int(np.max(yc)) + 0.5 , zdir='y', color="blue", label='curve in (x,y)')
         ax.set_zlim3d(-2,2)
         surf = ax.plot_surface(X, Y, height, cmap="OrRd", alpha=0.9,
-                     linewidth=0, antialiased=True, vmin = -1, vmax = 1)
+                     linewidth=0, antialiased=True, vmin = -0.2, vmax = 0.2)
 
         fig.colorbar(surf, shrink=0.5, aspect=5)
     

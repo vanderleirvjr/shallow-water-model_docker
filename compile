@@ -41,7 +41,11 @@ while true; do
     
     case $opt in
         "Y")
-            build_makefile
+            if [ $COMP_NAME == 'mpiintel' ]; then 
+                build_makefile $COMP_NAME
+            else 
+                build_makefile
+            fi            
             if [ $is_container == "false" ]; then
                 build_container
             fi

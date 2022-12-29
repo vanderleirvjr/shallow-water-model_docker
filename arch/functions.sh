@@ -2,6 +2,11 @@
 build_makefile() {
 
     input="./arch/Makefile.ac"
+    if [ ! -z ${1} ]; then
+      if [ ${1} == "mpiintel" ]; then 
+          input="./arch/Makefile_mpi.ac"
+      fi
+    fi
   
     echo "include ../config.in" > ./src/Makefile
 
@@ -44,6 +49,36 @@ build_container() {
 
     ROOT_DIR=`pwd`
 
+if [ $COMP_NAME == "mpiintel" ]; then
+
+cat << EOF > ./bin/run
+
+#!/bin/bash
+
+USER=\`whoami\`
+
+if [ \${USER} != 'container' ]; then
+  echo
+  echo "  ERROR: Connect to the container first."
+  echo
+  exit
+fi
+
+if [ -z \${1} ]; then 
+    PROC=2
+else
+    PROC=\${1}
+fi
+
+cd \${HOME}/bin
+
+mpirun -np \$PROC ../src/swf.exe
+
+EOF
+
+
+else 
+
 cat << EOF > ./bin/run
 
 #!/bin/bash
@@ -62,6 +97,8 @@ cd \${HOME}/bin
 ../src/swf.exe
 
 EOF
+
+fi
 
 chmod 755 ./bin/run
 
@@ -129,6 +166,8 @@ build_config() {
 
     if [ ${1}  == "intel" ]; then
       COMP_NAME="intel"
+    elif [ ${1} == "mpiintel" ]; then 
+      COMP_NAME="mpiintel"
     elif [ ${1} == "gnu" ]; then 
       COMP_NAME="gnu"
     fi

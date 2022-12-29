@@ -7,7 +7,7 @@ program shallow_water
 
     implicit none
 
-    call initialize
+    call initialize    
 
     call run
 

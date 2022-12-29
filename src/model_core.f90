@@ -89,6 +89,9 @@ module model_core
             implicit none
 
 #ifdef MPI
+
+            integer :: ierror
+
             call MPI_FINALIZE(ierror)
 #endif
 

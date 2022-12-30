@@ -130,6 +130,9 @@ module physics_mpi
         luwnd = tuwnd
         lvwnd = tvwnd
 
+        deallocate(tuwnd)
+        deallocate(tvwnd)        
+
         do i = 2, grid%nx + 1
             do j = 2, 1 + grid%ny/isize
                 term1 = luwnd(i,j) * ( lheight(i+1,j) - 2*lheight(i,j) + lheight(i-1,j) ) / grid%dx * grid%dx 
@@ -142,6 +145,8 @@ module physics_mpi
 
         lheight = theight
 
+        deallocate(theight)
+
         blocklen = grid%nx
         count = grid%ny/isize
         stride = grid%nx + 2
@@ -153,6 +158,7 @@ module physics_mpi
             call MPI_SEND(luwnd(2,2),1,pblock,0,1,MPI_COMM_WORLD,ierror)
             call MPI_SEND(lvwnd(2,2),1,pblock,0,2,MPI_COMM_WORLD,ierror)
             call MPI_SEND(lheight(2,2),1,pblock,0,3,MPI_COMM_WORLD,ierror)
+            
         else
             do l = 0, isize - 1
                 iy = 1 + l*grid%ny/isize
@@ -185,8 +191,16 @@ module physics_mpi
                     grid%vwnd(i,j) = gvwnd(i+1,j+1) 
                 end do
             end do
-   
+            
+            deallocate(guwnd)
+            deallocate(gvwnd)
+            deallocate(gheight)
+
         end if
+
+        deallocate(luwnd)
+        deallocate(lvwnd)
+        deallocate(lheight)
 
         count = 9
             

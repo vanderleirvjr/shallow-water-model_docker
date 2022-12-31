@@ -1,11 +1,11 @@
 &gridinfo
-nx = 10
-ny = 10
-dx = 0.5
-dy = 0.5
+nx = 480
+ny = 480
+dx = 50
+dy = 50
 /
 &integration
-dt = 1
+dt = 0.001
 run_time = 100
 /
 &parameters
@@ -14,6 +14,6 @@ bc = 0.
 fc = 0.
 /
 &io
-history_interval = 5
+history_interval = 1
 output_file_name_prefix = "swf"
 /

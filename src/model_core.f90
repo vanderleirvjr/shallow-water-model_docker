@@ -30,11 +30,40 @@ module model_core
 
             implicit none
 
+            integer              :: ierror, irank = 0
+            real(kind=r_kind)    :: start, end
+
+#ifdef MPI
+            call MPI_INIT(ierror)
+            call MPI_COMM_RANK(MPI_COMM_WORLD,irank,ierror)
+#endif
+
+            if (irank == 0) then
+                call CPU_TIME(start)
+                write(stdout,*)
+                write(stdout,*) '-------------------------------------------'
+                write(stdout,*)
+                write(stdout,'(12X,A19)') 'Shallow Water Model'
+                write(stdout,*)
+                write(stdout,*) '-------------------------------------------'
+                write(stdout,*)
+                write(stdout,'(A25)') 'Initializing the model...'
+            end if
+
             call read_namelist(opt)
                
             call initialize_grid(opt%nx,opt%ny,opt%dx,opt%dy,grid)
 
             call initial_conditions(grid)
+
+            if (irank == 0) then
+                call CPU_TIME(end)
+                write(stdout,'(A41,F14.6)') 'Initialization completed. Time elapsed = ', end - start
+            end if
+
+#ifdef MPI
+            call MPI_BARRIER(MPI_COMM_WORLD,ierror)
+#endif
 
             return
 
@@ -44,41 +73,59 @@ module model_core
 
             implicit none
 
-            integer              :: i, iterations
+            integer              :: i, iterations, j, k
             integer              :: ierror, isize, irank = 0
             integer(kind=i_kind) :: stdout
-            real(kind=r_kind)    :: elapsed
-            real(kind=r_kind)    :: start, finish
+            real(kind=r_kind)    :: start, end, wstart, wend, tstart, tend
 
             iterations = int(opt%run_time / opt%dt)
            
 #ifdef MPI
-            call MPI_INIT(ierror)
             call MPI_COMM_RANK(MPI_COMM_WORLD,irank,ierror)
             call MPI_COMM_SIZE(MPI_COMM_WORLD,isize,ierror)
 #endif
+
+            if (irank == 0) then
+                call CPU_TIME(tstart)
+                write(stdout,'(A28)') 'Integration step starting...'
+            end if
 
             do i = 1, iterations + 1                
 
                 
                 if ( irank .EQ. 0 ) then
                 
-                    if ( mod((i-1)*opt%dt*1000,opt%history_interval*1000) == 0 ) then                        
+                    if ( mod((i-1)*opt%dt*1000,opt%history_interval*1000) == 0 ) then
+                        call CPU_TIME(wstart)                        
                         write(stdout,'("Writing output file... Time step = ",F6.2)') (i-1)*opt%dt
-                        call write_output(grid,opt,i)                        
-                        elapsed = finish - start
-                        write(stdout,'("Done. Time elapsed = ",F8.4)') elapsed
+                        call write_output(grid,opt,i)
+                        call CPU_TIME(wend)                        
+                        write(stdout,'("Done. Time elapsed = ",F14.6)') wend - wstart
                     end if
                 
+                end if
+
+                if (irank == 0) then
+                    call CPU_TIME(start) 
                 end if
 
                 call update_state(grid,opt%dt,opt%mheight,opt%fc,opt%bc)
 
 #ifdef MPI
                 call MPI_BARRIER(MPI_COMM_WORLD,ierror)
-#endif                
+#endif
+
+                if (irank == 0) then
+                    call CPU_TIME(end)
+                    write(stdout,'(A16,1X,I10,1X,A1,1X,F14.6,A16)') 'Simulation step:', i, ':', end - start, 'elapsed seconds.'
+                end if
     
             end do
+
+            if (irank == 0) then
+                call CPU_TIME(tend)
+                write(stdout,'(A43,F14.6,A16)') 'Simulation finalized. Total time elapsed = ', tend - tstart, 'elapsed seconds.'
+            end if
 
             return
 

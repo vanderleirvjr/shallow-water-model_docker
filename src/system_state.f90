@@ -53,15 +53,20 @@ module system_state
 
             implicit none
 
-            type(grid2d), intent(inout) :: grid
-            integer                     :: i, j
+            type(grid2d), intent(inout)        :: grid
+            real(kind=r_kind)                  :: xcenter, ycenter, dist, last
+            integer                            :: i, j, points
+
+            xcenter = MAXVAL(grid%x(:))/2
+            ycenter = MAXVAL(grid%y(:))/2
+            points = SIZE(grid%x(:))
 
             do i = 1, grid%nx
                 do j = 1, grid%ny 
                     grid%uwnd(i,j) = 0.3
                     grid%vwnd(i,j) = 0.
-                    grid%height(i,j) = 1000 + 1.5/1.1**exp( sqrt((i-20.)*(i-20.) + (j-20)*(j-20)) )                  
-                    !grid%height(i,j) = 1000 + 2*cos( 3.141592 * sqrt((i-100.)*(i-100.) + (j-100.)*(j-100.)) / 100)
+                    dist = sqrt( (grid%x(i)-xcenter)**2 + (grid%y(j)-ycenter)**2 )
+                    grid%height(i,j) = 1000 + (1.4*exp(-dist/3000))*cos( (2*PI/9000) * dist )    
                 end do 
             end do
 

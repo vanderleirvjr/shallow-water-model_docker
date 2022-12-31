@@ -12,6 +12,7 @@ module physics_mpi
     use kinds, only: i_kind, r_kind
     use system_state, only: grid2d
     use constants, only: GRAV
+    use mpi_module, only: grid_mpi_type, partial_mpi_type, local_mpi_type, inner_mpi_type
     use mpi
      
     implicit none
@@ -55,12 +56,6 @@ module physics_mpi
         lheight = -999.9
         if ( irank == 0 ) then
             
-            blocklen = 2 + grid%nx
-            count = 2 + grid%ny/isize
-            stride = grid%nx + 2        
-            call MPI_TYPE_VECTOR(count,blocklen,stride,MPI_DOUBLE,sblock,ierror)
-            call MPI_TYPE_COMMIT( sblock, ierror)
-
             allocate(guwnd(grid%nx + 2 ,grid%ny + 2 ))
             allocate(gvwnd(grid%nx + 2 ,grid%ny + 2 ))
             allocate(gheight(grid%nx + 2 ,grid%ny + 2 ))            
@@ -71,9 +66,9 @@ module physics_mpi
                 iy = 1 + l*grid%ny/isize
                 if ( l /= 0 ) then
                     
-                    call MPI_SEND(guwnd(1,iy),1,sblock,l,1,MPI_COMM_WORLD,ierror)
-                    call MPI_SEND(gvwnd(1,iy),1,sblock,l,1,MPI_COMM_WORLD,ierror)
-                    call MPI_SEND(gheight(1,iy),1,sblock,l,1,MPI_COMM_WORLD,ierror)
+                    call MPI_SEND(guwnd(1,iy),1,partial_mpi_type(grid),l,1,MPI_COMM_WORLD,ierror)
+                    call MPI_SEND(gvwnd(1,iy),1,partial_mpi_type(grid),l,1,MPI_COMM_WORLD,ierror)
+                    call MPI_SEND(gheight(1,iy),1,partial_mpi_type(grid),l,1,MPI_COMM_WORLD,ierror)
                     
                 else 
                     do i = 1, grid%nx + 2
@@ -87,17 +82,10 @@ module physics_mpi
             end do
 
         else
-            
-            blocklen = grid%nx + 2
-            count = 2 + grid%ny/isize
-            stride = grid%nx + 2
-            
-            call MPI_TYPE_VECTOR(count,blocklen,stride,MPI_DOUBLE,rblock,ierror)
-            call MPI_TYPE_COMMIT( rblock, ierror)
 
-            call MPI_RECV(luwnd(1,1),1,rblock,0,1,MPI_COMM_WORLD,MPI_STATUS_IGNORE,ierror)
-            call MPI_RECV(lvwnd(1,1),1,rblock,0,1,MPI_COMM_WORLD,MPI_STATUS_IGNORE,ierror)
-            call MPI_RECV(lheight(1,1),1,rblock,0,1,MPI_COMM_WORLD,MPI_STATUS_IGNORE,ierror)
+            call MPI_RECV(luwnd(1,1),1,local_mpi_type(grid),0,1,MPI_COMM_WORLD,MPI_STATUS_IGNORE,ierror)
+            call MPI_RECV(lvwnd(1,1),1,local_mpi_type(grid),0,1,MPI_COMM_WORLD,MPI_STATUS_IGNORE,ierror)
+            call MPI_RECV(lheight(1,1),1,local_mpi_type(grid),0,1,MPI_COMM_WORLD,MPI_STATUS_IGNORE,ierror)
             
         end if
 
@@ -139,7 +127,7 @@ module physics_mpi
                 term2 = (mheight + lheight(i,j) ) * ( luwnd(i+1,j) - 2*luwnd(i,j) + luwnd(i-1,j) ) / grid%dx * grid%dx 
                 term3 = lvwnd(i,j) * ( lheight(i,j+1) - 2*lheight(i,j) + lheight(i,j-1) ) / grid%dy * grid%dy
                 term4 = (mheight + lheight(i,j) ) * ( lvwnd(i,j+1) -2*lvwnd(i,j) + lvwnd(i,j-1) ) / grid%dy * grid%dy
-                theight(i,j) = lheight(i,j) - dt * ( term1 + term2 + term3 + term4 )                
+                theight(i,j) = lheight(i,j) - dt * ( term1 + term2 + term3 + term4 )              
             end do
         end do
 
@@ -147,17 +135,11 @@ module physics_mpi
 
         deallocate(theight)
 
-        blocklen = grid%nx
-        count = grid%ny/isize
-        stride = grid%nx + 2
-        call MPI_TYPE_VECTOR(count,blocklen,stride,MPI_DOUBLE,pblock,ierror)
-        call MPI_TYPE_COMMIT( pblock, ierror)
-
         if ( irank /= 0 ) then
 
-            call MPI_SEND(luwnd(2,2),1,pblock,0,1,MPI_COMM_WORLD,ierror)
-            call MPI_SEND(lvwnd(2,2),1,pblock,0,2,MPI_COMM_WORLD,ierror)
-            call MPI_SEND(lheight(2,2),1,pblock,0,3,MPI_COMM_WORLD,ierror)
+            call MPI_SEND(luwnd(2,2),1,inner_mpi_type(grid),0,1,MPI_COMM_WORLD,ierror)
+            call MPI_SEND(lvwnd(2,2),1,inner_mpi_type(grid),0,2,MPI_COMM_WORLD,ierror)
+            call MPI_SEND(lheight(2,2),1,inner_mpi_type(grid),0,3,MPI_COMM_WORLD,ierror)
             
         else
             do l = 0, isize - 1
@@ -202,43 +184,7 @@ module physics_mpi
         deallocate(lvwnd)
         deallocate(lheight)
 
-        count = 9
-            
-        blocklengths(1:2) = 1            
-        blocklengths(3) = grid%nx
-        blocklengths(4) = grid%ny
-        blocklengths(5:6) = 1            
-        blocklengths(7:9) = grid%nx*grid%ny
-
-        call MPI_GET_ADDRESS(grid, base, ierror)
-        call MPI_GET_ADDRESS(grid%nx, disp(1), ierror)
-        call MPI_GET_ADDRESS(grid%ny, disp(2), ierror)
-        call MPI_GET_ADDRESS(grid%x, disp(3), ierror)
-        call MPI_GET_ADDRESS(grid%y, disp(4), ierror) 
-        call MPI_GET_ADDRESS(grid%dx, disp(5), ierror)
-        call MPI_GET_ADDRESS(grid%dy, disp(6), ierror) 
-        call MPI_GET_ADDRESS(grid%uwnd(1,1), disp(7), ierror)
-        call MPI_GET_ADDRESS(grid%vwnd(1,1), disp(8), ierror)
-        call MPI_GET_ADDRESS(grid%height(1,1), disp(9), ierror)
-
-        disp(1) = disp(1) - base 
-        disp(2) = disp(2) - base 
-        disp(3) = disp(3) - base 
-        disp(4) = disp(4) - base 
-        disp(5) = disp(5) - base 
-        disp(6) = disp(6) - base 
-        disp(7) = disp(7) - base 
-        disp(8) = disp(8) - base 
-        disp(9) = disp(9) - base 
-        
-        datatypes(1:2) = MPI_INT            
-        datatypes(3:9) = MPI_DOUBLE
-        
-        call MPI_TYPE_CREATE_STRUCT(count,blocklengths,disp,datatypes,sgrid,ierror)
-
-        call MPI_TYPE_COMMIT(sgrid,ierror)
-
-        call MPI_BCAST(grid, 1, sgrid, 0, MPI_COMM_WORLD, ierror)
+        call MPI_BCAST(grid, 1, grid_mpi_type(grid), 0, MPI_COMM_WORLD, ierror)
  
         return
 

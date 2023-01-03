@@ -1,6 +1,6 @@
 
 check_container () {
-    if ! command -v docker &> /dev/null; then
+    if command -v docker &> /dev/null; then
       HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
       echo $HASH_ID
     else

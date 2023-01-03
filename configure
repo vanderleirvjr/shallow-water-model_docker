@@ -39,7 +39,7 @@ done
 while true; do
 
     container=$(check_container)
-    if [ -z $container ]; then
+    if [ ! -z $container ]; then
         echo " Skipping docker container... docker command not found."
         opt="n"
     else 

@@ -38,8 +38,8 @@ done
 
 while true; do
 
-    CMD=`which docker`
-    if [[ "$CMD" == *"not found"* ]]; then
+    container=$(check_container)
+    if [ -z $container ]; then 
         opt="n"
     else 
         echo 

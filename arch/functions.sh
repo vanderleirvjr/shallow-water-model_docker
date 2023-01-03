@@ -1,12 +1,11 @@
 
 check_container () {
 
-    CMD=`which docker`
-    if [[ "$CMD" == *"not found"* ]]; then
-      echo ""
-    else
+    if [ command -v docker ]; then
       HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
       echo $HASH_ID
+    else
+      echo ""
     fi
 
 

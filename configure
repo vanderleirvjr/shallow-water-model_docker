@@ -64,7 +64,10 @@ while true; do
     esac
 done
 
-HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+    container=$(check_container)
+    if [ ! -z $container ]; then 
+        HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+    fi
 
 if [ ! -z ${HASH_ID} ]; then
 while true; do

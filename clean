@@ -14,6 +14,7 @@ if [ ! -z ${1} ]; then
       rm -rf ./Dockerfile
       rm -rf ./docker-compose.yml
       rm -rf ./config.in
+      rm -rf ./.slocal
       container=$(check_container)
       if [ ! -z $container ]; then 
           echo "Stopping container..."

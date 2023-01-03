@@ -1,4 +1,18 @@
 
+check_container () {
+
+    CMD=`which docker`
+    if [[ "$CMD" == *"not found"* ]]; then
+      echo ""
+    else
+      HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+      echo $HASH_ID
+    fi
+
+
+
+}
+
 build_makefile() {
 
     input="./arch/Makefile.ac"
@@ -24,8 +38,14 @@ build_container() {
     if [ ! -z $IMAGE ]; then
         while true; do
 
-    echo 
-    read -p "  Found image called intel/oneapi-hpckit. Do you want to rebuild the image? [Y/n] " opt
+    echo
+
+    container=$(check_container)
+    if [ -z $container ]; then 
+        read -p "  Found image called intel/oneapi-hpckit. Do you want to rebuild the image? [Y/n] " opt
+    else 
+      opt="n"
+    fi
     echo
     
     case $opt in

@@ -36,6 +36,34 @@ while true; do
     esac
 done
 
+while true; do
+
+    CMD=`which docker`
+    if [[ "$CMD" == *"not found"* ]]; then
+        opt="n"
+    else 
+        echo 
+        read -p " Do you wish to build the code in a docker container? [Y/n] " opt
+        echo
+    fi
+    
+    case $opt in
+       "Y")
+          echo "  Docker flag added."
+          echo "DOCKER=Y" >> config.in
+          break
+          ;;
+      "n")
+          echo "DOCKER=n" >> config.in
+          break
+          ;;
+      *)      
+         echo "ERROR: Option $opt not valid. Try again..."
+         echo   
+     ;;
+    esac
+done
+
 HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
 
 if [ ! -z ${HASH_ID} ]; then

@@ -27,13 +27,16 @@ mkdir -p ./bin
 
 while true; do
 
-     HASH_ID=`docker ps | grep intel-gnu | grep intel/oneapi-hpckit | cut -d' ' -f1`
+    container=$(check_container)
+    if [ ! -z container ]; then 
+        HASH_ID=$container
+    fi
 
     is_container=false
-    if [[ -f ./.local ]]; then
+    if [[ -f ./.slocal ]]; then
         opt="n"
     elif [[ -z $HASH_ID ]]; then
-        read -p " Do you wish to build the code in a docker container? [Y/n] " opt
+        opt=$DOCKER
     else 
        opt="Y"
        is_container=true
@@ -56,8 +59,12 @@ while true; do
             break
             ;;
         "n")
-            touch ./.local
-            build_makefile
+            touch ./.slocal
+            if [ $COMP_NAME == 'mpiintel' ]; then 
+                build_makefile $COMP_NAME
+            else 
+                build_makefile
+            fi
             cd ./src
             make
             cd ../bin
